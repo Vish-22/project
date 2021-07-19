@@ -32,6 +32,8 @@ dependencies:
   flutter_typeahead:
   alt_http:
   dio:
+  firebase_core:
+  cloud_firestore:
 dev_dependencies:
   flutter_test:
     sdk: flutter

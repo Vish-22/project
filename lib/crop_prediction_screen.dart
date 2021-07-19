@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
 
 class CropPrediction extends StatefulWidget {
   @override
@@ -149,18 +148,21 @@ Future callApi(
     "min_temp": minTemp,
     "max_temp": maxTemp,
   };
-  Map<String, String> headers = {'Content-type': 'application/json'};
+  Map<String, String> headers = {'Accept': 'application/json'};
   Uri url = Uri.parse('https://agrocare-api.herokuapp.com/predictCrop');
-  String uri = 'https://agrocare-api.herokuapp.com/predictCrop';
-  String json =
-      '{"district": $district,"season": $season, "min_temp": $minTemp, "max_temp": $maxTemp}';
-  // http.Response response = await http.post(url, headers: headers, body: json);
-  Dio dio = Dio();
-  final response = await dio.post(uri,
-      data: bodyParams,
-      options: Options(
-          headers: {'Content-Type': 'application/json; charset=UTF-8'}));
-  print(response.data);
+
+  final client = HttpClient();
+  final request = await client.postUrl(url);
+  request.headers
+      .set(HttpHeaders.contentTypeHeader, "application/json; charset=UTF-8");
+  request.write(jsonEncode(
+      '{"district": $district,"season": $season, "min_temp": $minTemp, "max_temp": $maxTemp}'));
+  final response = await request.close();
+  response.transform(utf8.decoder).listen((contents) {
+    print(contents);
+  });
+  // print(response.body.toString());
+  // print(Crop.fromJson(json.decode(response.body)));
   return response;
 }
 
